@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hamptons 26.2">
+<meta name="theme-color" content="#0f172a">
+<title>Hamptons Marathon Plan</title>
+<link rel="manifest" href="#" id="manifestLink">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overscroll-behavior:none}
+  body{font-family:Georgia,'Times New Roman',serif;background:#f8fafc;color:#0f172a;-webkit-font-smoothing:antialiased}
+  button{cursor:pointer;font-family:inherit;border:none;background:none}
+  .mono{font-family:'Courier New',monospace}
+  /* Header */
+  .header{background:#0f172a;padding:env(safe-area-inset-top,16px) 16px 20px;padding-top:calc(env(safe-area-inset-top,0px) + 20px)}
+  .header-sub{font-size:10px;letter-spacing:4px;color:#64748b;text-transform:uppercase;margin-bottom:8px;font-family:'Courier New',monospace}
+  .header h1{font-size:28px;font-weight:900;letter-spacing:-1px;color:#f8fafc;margin-bottom:4px}
+  .header-dates{font-size:11px;color:#475569;letter-spacing:2px;font-family:'Courier New',monospace}
+  .stat-grid{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .stat-card{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:9px 12px;min-width:68px}
+  .stat-val{font-size:13px;font-weight:900;font-family:'Courier New',monospace}
+  .stat-label{font-size:8px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-family:'Courier New',monospace}
+  .info-box{margin-top:12px;border-radius:8px;padding:10px 14px;font-size:11px;line-height:1.7;font-family:'Courier New',monospace}
+  .info-green{background:#052e16;border:1px solid #166534;color:#bbf7d0}
+  .info-green strong{color:#4ade80}
+  .info-red{background:#450a0a;border:1px solid #991b1b;color:#fecaca}
+  .info-red strong{color:#f87171}
+  /* Tabs */
+  .tabs{position:sticky;top:0;z-index:10;background:#fff;border-bottom:2px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.08);display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab-btn{padding:13px 14px;font-size:10px;font-family:'Courier New',monospace;letter-spacing:2px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;font-weight:400;transition:color .15s}
+  .tab-btn.active{color:#0f172a;border-bottom-color:#0f172a;font-weight:700}
+  /* Main content */
+  .content{max-width:860px;margin:0 auto;padding:20px 14px calc(env(safe-area-inset-bottom,0px) + 40px)}
+  /* Week selector */
+  .section-label{font-size:9px;letter-spacing:3px;color:#94a3b8;text-transform:uppercase;margin-bottom:10px;font-family:'Courier New',monospace;font-weight:700}
+  .week-grid{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+  .week-btn{width:38px;height:38px;border-radius:8px;font-size:12px;font-family:'Courier New',monospace;font-weight:700;border:2px solid #e2e8f0;background:#fff;transition:all .15s;position:relative}
+  .week-dot{position:absolute;width:6px;height:6px;border-radius:50%;border:1.5px solid white}
+  .week-legend{font-size:10px;color:#94a3b8;margin-top:6px;margin-bottom:18px;font-family:'Courier New',monospace}
+  /* Week header card */
+  .week-header{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px 18px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12;border-top-width:4px}
+  .week-phase{font-size:9px;text-transform:uppercase;letter-spacing:3px;font-family:'Courier New',monospace;font-weight:700;margin-bottom:4px}
+  .week-date{font-size:24px;font-weight:900;color:#0f172a}
+  .week-stats{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .week-stat{text-align:center}
+  .week-stat-val{font-size:22px;font-weight:900;font-family:'Courier New',monospace}
+  .week-stat-label{font-size:8px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-family:'Courier New',monospace}
+  /* Day cards */
+  .day-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+  .day-card{border-radius:8px;padding:11px 14px;display:flex;gap:12px;align-items:flex-start;border:1px solid transparent;border-left-width:4px}
+  .day-label{min-width:34px;font-size:8px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;padding-top:3px;font-family:'Courier New',monospace;font-weight:700}
+  .day-title{font-size:13px;font-weight:700;color:#0f172a}
+  .day-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px;margin-bottom:4px;align-items:center}
+  .day-tag{font-size:8px;text-transform:uppercase;letter-spacing:1px;padding:2px 7px;border-radius:4px;font-family:'Courier New',monospace;font-weight:700}
+  .day-note{font-size:11px;color:#475569;line-height:1.6;margin-top:4px}
+  .day-long-note{font-size:11px;line-height:1.6;margin-top:4px;font-style:italic}
+  .action-btn{margin-top:8px;border-radius:6px;padding:5px 13px;font-size:9px;font-family:'Courier New',monospace;letter-spacing:1px;text-transform:uppercase;font-weight:700;border:1.5px solid}
+  /* Nav */
+  .week-nav{display:flex;justify-content:space-between;align-items:center}
+  .nav-btn{background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 16px;font-size:11px;font-family:'Courier New',monospace;font-weight:700}
+  .nav-btn:disabled{color:#cbd5e1;cursor:default}
+  .nav-center{font-size:11px;color:#94a3b8;font-family:'Courier New',monospace}
+  /* Section cards */
+  .section-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:14px}
+  .section-card-header{padding:13px 16px;border-bottom:1px solid #f1f5f9}
+  .section-card-title{font-size:9px;text-transform:uppercase;letter-spacing:3px;font-family:'Courier New',monospace;font-weight:700}
+  .section-card-sub{font-size:12px;margin-top:2px}
+  .section-item{padding:12px 16px;border-bottom:1px solid #f1f5f9;display:flex;gap:10px}
+  .section-item:last-child{border-bottom:none}
+  .item-num{min-width:20px;font-size:11px;color:#cbd5e1;padding-top:1px;font-family:'Courier New',monospace;font-weight:700}
+  .item-name{font-size:13px;font-weight:700;margin-bottom:4px}
+  .item-sets{font-size:9px;padding:2px 8px;border-radius:4px;font-family:'Courier New',monospace;font-weight:700}
+  .item-cue{font-size:11px;color:#64748b;line-height:1.6;margin-top:3px}
+  /* Alert boxes */
+  .alert{border-radius:8px;padding:12px 14px;margin-bottom:12px;border-left-width:4px;border-left-style:solid}
+  .alert-title{font-size:9px;text-transform:uppercase;letter-spacing:2px;font-family:'Courier New',monospace;font-weight:700;margin-bottom:5px}
+  .alert-body{font-size:12px;line-height:1.7}
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.75);display:flex;align-items:flex-end;justify-content:center;z-index:200;padding:0}
+  .modal-sheet{background:#fff;border-radius:20px 20px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom,0px) + 24px);max-height:88vh;overflow-y:auto;width:100%;-webkit-overflow-scrolling:touch}
+  .modal-handle{width:40px;height:4px;background:#e2e8f0;border-radius:2px;margin:0 auto 18px}
+  .modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .modal-close{background:#f1f5f9;border:1.5px solid #e2e8f0;color:#64748b;border-radius:8px;padding:7px 13px;font-size:10px;font-family:'Courier New',monospace;font-weight:700}
+  .tab-pills{display:flex;gap:6px;margin-bottom:16px}
+  .tab-pill{flex:1;padding:8px;border-radius:8px;font-size:10px;font-family:'Courier New',monospace;font-weight:700;letter-spacing:1px;border:1.5px solid}
+  /* Notes */
+  .note-card{border-radius:8px;padding:13px 14px;margin-bottom:10px;border:1px solid transparent;border-left-width:4px;border-left-style:solid}
+  .note-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-family:'Courier New',monospace;margin-bottom:5px}
+  .note-body{font-size:12px;line-height:1.75}
+  /* Install banner */
+  .install-banner{background:#1e293b;color:#f8fafc;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-family:'Courier New',monospace}
+  .install-btn{background:#3b82f6;color:#fff;border-radius:6px;padding:7px 14px;font-size:11px;font-family:'Courier New',monospace;font-weight:700;white-space:nowrap}
+  .hidden{display:none}
+  /* Completed overlay on day */
+  .day-done{position:relative}
+  .day-done::after{content:'✓';position:absolute;top:10px;right:12px;font-size:16px;color:#059669;font-weight:900}
+  /* Log modal */
+  .log-textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:Georgia,serif;resize:none;color:#0f172a;background:#f8fafc;min-height:80px;margin-top:8px}
+  .log-textarea:focus{outline:none;border-color:#2563eb}
+  .log-save-btn{width:100%;margin-top:10px;background:#0f172a;color:#fff;border-radius:8px;padding:11px;font-size:12px;font-family:'Courier New',monospace;font-weight:700;letter-spacing:1px}
+  .progress-bar-wrap{background:#e2e8f0;border-radius:4px;height:6px;margin-top:8px;overflow:hidden}
+  .progress-bar-fill{height:100%;border-radius:4px;background:#059669;transition:width .4s}
+</style>
+</head>
+<body>
+
+<div id="installBanner" class="install-banner hidden">
+  <span>📱 Add to Home Screen for offline access</span>
+  <button class="install-btn" onclick="installPWA()">Install</button>
+</div>
+
+<div id="app"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const strengthExercises = {
+  A: { label:"Foundation + Tendon", focus:"Glutes, ankle mobility, extensor tendon protection",
+    core:[
+      {name:"Single-leg Glute Bridge",sets:"2→3×12 each",cue:"Drive heel into floor. Squeeze glute at top. Don't let hip drop."},
+      {name:"Kneeling Dorsiflexion Stretch",sets:"3×30sec each",cue:"Knee over toe, lean forward. Direct tendon mobility."},
+      {name:"Single-leg Calf Raise",sets:"2→3×15 each",cue:"3sec down, 1sec up. Full range. Edge of step when ready."},
+      {name:"Eccentric Tibialis Raise ⚡",sets:"3×15",cue:"Heels on edge. 2sec lower. THE non-negotiable for your tendon history."},
+    ],
+    optional:[
+      {name:"Clamshells (band)",sets:"2×15 each",cue:"Keep hips stacked. Controls hip drop in late-race miles."},
+      {name:"Dead Bug",sets:"2×8 each",cue:"Lower back flat to floor. Core stability for upright form."},
+    ]
+  },
+  B: { label:"Power & Stability", focus:"Single-leg strength, running posture, late-race form",
+    core:[
+      {name:"Bulgarian Split Squat",sets:"2→3×10 each",cue:"Rear foot elevated. Front knee tracks over toe. Build to add weight."},
+      {name:"Single-leg Romanian Deadlift",sets:"2→3×10 each",cue:"Hinge at hip, soft knee. Keep hips level — fights lateral drop."},
+      {name:"Pallof Press",sets:"2→3×10 each",cue:"Anti-rotation core. Resist the pull. Steady breathing."},
+      {name:"Eccentric Tibialis Raise ⚡",sets:"3×15",cue:"Every routine, every week. Tendon health is non-negotiable."},
+    ],
+    optional:[
+      {name:"Step-up with Knee Drive",sets:"2×12 each",cue:"Drive knee high at top. Builds glute power for hills."},
+      {name:"Copenhagen Plank",sets:"2×20s each",cue:"Side plank, top leg on bench. Adductor strength."},
+    ]
+  },
+  C: { label:"Endurance & Resilience", focus:"Fatigue resistance, marathon-specific durability",
+    core:[
+      {name:"Walking Lunge",sets:"2→3×20 steps",cue:"Add light dumbbells when ready. Mimics late-race fatigue patterns."},
+      {name:"Banded Hip Thrust",sets:"2→3×15",cue:"Full hip extension at top. Band adds glute med challenge."},
+      {name:"Plank to Down Dog",sets:"2→3×10",cue:"Dynamic core + hip flexor. Maintain breathing throughout."},
+      {name:"Eccentric Tibialis Raise ⚡",sets:"3×15",cue:"Every week. Non-negotiable given your tendon history."},
+    ],
+    optional:[
+      {name:"Single-leg Wall Sit",sets:"2×30s each",cue:"Isometric quad strength. Simulates downhill braking."},
+      {name:"Side-lying Hip Abduction",sets:"2×20 each",cue:"Slow and controlled. Prevents IT band issues at peak mileage."},
+    ]
+  }
+};
+
+const tuesdayMini = [
+  {name:"Single-leg Glute Bridge",sets:"2×20 each → 2×15 W10+",cue:"Higher reps than Friday. Endurance focus, not strength."},
+  {name:"Single-leg Calf Raise",sets:"2×20 each → 2×15 W10+",cue:"Slow eccentric. Protect tendon through peak mileage."},
+  {name:"Eccentric Tibialis Raise ⚡",sets:"2×15",cue:"Always. Even in taper. Your tendon needs this."},
+];
+
+const weeks = [
+  {week:1,startDate:"Jun 8",phase:"Base",totalMiles:26,longRun:8,speedSession:false,strengthSets:"2 sets",tueMini:false,longRunNote:"Easy, conversational. HR under 155. First long run — resist going fast.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"3mi Easy + 4 Strides",note:"4×20sec strides after easy run. HR 140–155."},wed:{type:"pace",label:"5mi Marathon Pace",note:"~10:45–11:00/mi. HR 155–165 for you. First marathon pace run."},thu:{type:"easy",label:"3mi Easy + 4 Strides",note:"4×20sec strides."},fri:{type:"strength",label:"Strength A · 2 sets",routine:"A",note:"Core 4 only. 2 sets."},sat:{type:"long",label:"8mi Long"},sun:{type:"easy",label:"4mi Easy Recovery",note:"Easy post-long-run recovery. HR under 150."}},
+  {week:2,startDate:"Jun 15",phase:"Base",totalMiles:28,longRun:9,speedSession:false,strengthSets:"2 sets",tueMini:false,longRunNote:"Stay easy. HR under 155. Focus on time on feet.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"3mi Easy + 4 Strides",note:"4×20sec strides."},wed:{type:"easy",label:"5mi Easy",note:"Pure easy this week. No pace work."},thu:{type:"easy",label:"3mi Easy + 4 Strides",note:"4×20sec strides."},fri:{type:"strength",label:"Strength B · 2 sets",routine:"B",note:"Core 4 only. 2 sets."},sat:{type:"long",label:"9mi Long"},sun:{type:"easy",label:"5mi Easy Recovery",note:"Back-to-back with Saturday long run."}},
+  {week:3,startDate:"Jun 22",phase:"Base",totalMiles:26,longRun:6,cutback:true,speedSession:true,strengthSets:"2 sets",tueMini:false,longRunNote:"Cutback week. Body absorbing W1–W2. Resist going further.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"3mi Easy + 4 Strides",note:"4×20sec strides."},wed:{type:"speed",label:"5mi w/ 6×400m",note:"1mi WU + 6×400m @ 9:00–9:15/mi + 1mi CD. HR up to 170 on reps."},thu:{type:"easy",label:"3mi Easy + 4 Strides",note:"Easy recovery after speed."},fri:{type:"strength",label:"Strength C · 2 sets",routine:"C",note:"Core 4 only. 2 sets."},sat:{type:"long",label:"6mi Long"},sun:{type:"easy",label:"6mi Easy Recovery",note:"Cutback week so Sunday is longer relatively."}},
+  {week:4,startDate:"Jun 29",phase:"Base",totalMiles:31,longRun:11,speedSession:false,strengthSets:"2 sets",tueMini:false,longRunNote:"First double-digit long run. Miles 1–8 easy, final 3 at marathon pace.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"4mi Easy + 4 Strides",note:"4×20sec strides."},wed:{type:"pace",label:"6mi Marathon Pace",note:"~10:45–11:00/mi. Back to pace work."},thu:{type:"easy",label:"4mi Easy + 4 Strides",note:"4×20sec strides."},fri:{type:"strength",label:"Strength A · 2 sets",routine:"A",note:"Core 4 only. 2 sets."},sat:{type:"long",label:"11mi Long"},sun:{type:"easy",label:"3mi Easy Recovery",note:"Short recovery run after first double-digit long run."}},
+  {week:5,startDate:"Jul 6",phase:"Build",totalMiles:33,longRun:12,speedSession:true,strengthSets:"3 sets",tueMini:true,longRunNote:"You've run 12mi before — easy base work. Start practicing fueling.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"4mi Easy + 6 Strides + Mini",note:"6×20sec strides + 10min mini session."},wed:{type:"speed",label:"5mi w/ 8×400m",note:"1mi WU + 8×400m @ 9:00–9:15/mi + 1mi CD."},thu:{type:"easy",label:"4mi Easy + 6 Strides",note:"6×20sec strides. No mini on Thursday."},fri:{type:"strength",label:"Strength B · 3 sets",routine:"B",note:"Core 4 × 3 sets."},sat:{type:"long",label:"12mi Long"},sun:{type:"easy",label:"5mi Easy Recovery",note:"Back-to-back Sunday. HR under 155."}},
+  {week:6,startDate:"Jul 13",phase:"Build",totalMiles:28,longRun:9,cutback:true,speedSession:false,strengthSets:"3 sets",tueMini:true,longRunNote:"Stepback week. HR under 150. Legs should feel noticeably fresher.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"4mi Easy + 6 Strides + Mini",note:"6×20sec strides + mini session."},wed:{type:"pace",label:"6mi Marathon Pace",note:"~10:45–11:00/mi. Should feel easier than W4."},thu:{type:"easy",label:"4mi Easy + 6 Strides",note:"6×20sec strides."},fri:{type:"strength",label:"Strength C · 3 sets",routine:"C",note:"Core 4 × 3 sets."},sat:{type:"long",label:"9mi Long"},sun:{type:"easy",label:"2mi Easy Recovery",note:"Short recovery — cutback week."}},
+  {week:7,startDate:"Jul 20",phase:"Build",totalMiles:37,longRun:14,speedSession:true,strengthSets:"3 sets",tueMini:true,longRunNote:"First serious long run. Gel every 45min. Practice race day nutrition.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 6 Strides + Mini",note:"6×20sec strides + mini session."},wed:{type:"speed",label:"6mi w/ 4×800m",note:"1mi WU + 4×800m @ 9:15–9:30/mi + 1mi CD."},thu:{type:"easy",label:"5mi Easy + 6 Strides",note:"6×20sec strides."},fri:{type:"strength",label:"Strength A · 3 sets",routine:"A",note:"Core 4 × 3 sets."},sat:{type:"long",label:"14mi Long"},sun:{type:"easy",label:"4mi Easy Recovery",note:"Back-to-back after 14 miles. Very easy."}},
+  {week:8,startDate:"Jul 27",phase:"Build",totalMiles:39,longRun:15,speedSession:false,strengthSets:"3 sets",tueMini:true,longRunNote:"New territory — 15 miles. Last 3mi at marathon pace. Walk water stops.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 6 Strides + Mini",note:"6×20sec strides + mini session."},wed:{type:"pace",label:"7mi Marathon Pace",note:"~10:45–11:00/mi. Longest pace run so far."},thu:{type:"easy",label:"5mi Easy + 6 Strides",note:"6×20sec strides."},fri:{type:"strength",label:"Strength B · 3 sets",routine:"B",note:"Core 4 × 3 sets."},sat:{type:"long",label:"15mi Long"},sun:{type:"easy",label:"4mi Easy Recovery",note:"Back-to-back after 15 miles. Very easy."}},
+  {week:9,startDate:"Aug 3",phase:"Build",totalMiles:32,longRun:10,cutback:true,speedSession:true,strengthSets:"3 sets",tueMini:true,longRunNote:"Cutback long run after W8. Do not inflate. Legs need this.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 6 Strides + Mini",note:"6×20sec strides + mini session."},wed:{type:"speed",label:"6mi w/ 5×800m",note:"1mi WU + 5×800m @ 9:15–9:30/mi + 1mi CD."},thu:{type:"easy",label:"5mi Easy + 6 Strides",note:"6×20sec strides."},fri:{type:"strength",label:"Strength C · 3 sets",routine:"C",note:"Core 4 × 3 sets."},sat:{type:"long",label:"10mi Long"},sun:{type:"easy",label:"3mi Easy Recovery",note:"Short recovery run."}},
+  {week:10,startDate:"Aug 10",phase:"Build",totalMiles:41,longRun:17,speedSession:false,strengthSets:"2 sets",tueMini:true,longRunNote:"Big week. Arrive rested. Gel every 40min. This is where marathons are won in training.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 6 Strides + Mini",note:"6×20sec strides + mini session."},wed:{type:"pace",label:"8mi Marathon Pace",note:"~10:45–11:00/mi. Longest mid-week run."},thu:{type:"easy",label:"5mi Easy + 6 Strides",note:"6×20sec strides."},fri:{type:"strength",label:"Strength A · 2 sets",routine:"A",note:"Drop to 2 sets before big week."},sat:{type:"long",label:"17mi Long"},sun:{type:"easy",label:"3mi Easy Recovery",note:"Back-to-back after 17 miles. Walk if needed."}},
+  {week:11,startDate:"Aug 17",phase:"Peak",totalMiles:44,longRun:18,speedSession:true,strengthSets:"2 sets",tueMini:true,longRunNote:"Longest run to date. Mi 1–12 easy, 13–16 @ marathon pace, final 2 easy. Nail nutrition.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 4 Strides + Mini",note:"4 strides (reduced for peak phase)."},wed:{type:"speed",label:"6mi w/ 3×1mi",note:"1mi WU + 3×1mi @ 9:30–9:45/mi + 1mi CD."},thu:{type:"easy",label:"5mi Easy + 4 Strides",note:"4×20sec strides."},fri:{type:"strength",label:"Strength B · 2 sets",routine:"B",note:"2 sets only before big weekend."},sat:{type:"long",label:"18mi Long"},sun:{type:"easy",label:"7mi Easy Recovery",note:"Longest Sunday run — backs up 18 miles."}},
+  {week:12,startDate:"Aug 24",phase:"Peak",totalMiles:35,longRun:13,cutback:true,speedSession:false,strengthSets:"2 sets",tueMini:true,longRunNote:"Stepback — feels too easy. Good. Body consolidating peak work.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 4 Strides + Mini",note:"4 strides + mini session."},wed:{type:"pace",label:"8mi Marathon Pace",note:"Should feel noticeably more controlled than W10."},thu:{type:"easy",label:"5mi Easy + 4 Strides",note:"4×20sec strides."},fri:{type:"strength",label:"Strength C · 2 sets",routine:"C",note:"2 sets. Core 4 only."},sat:{type:"long",label:"13mi Long"},sun:{type:"easy",label:"2mi Easy Recovery",note:"Short recovery. Cutback week."}},
+  {week:13,startDate:"Aug 31",phase:"Peak",totalMiles:48,longRun:20,speedSession:true,strengthSets:"2 sets",tueMini:true,longRunNote:"THE BIG ONE. Run easy the entire way. Gel every 40min. Confidence builder — you've done the work.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 4 Strides + Mini",note:"4 strides + mini session."},wed:{type:"speed",label:"6mi w/ 4×1mi",note:"1mi WU + 4×1mi @ 9:30–9:45/mi + 1mi CD."},thu:{type:"easy",label:"5mi Easy + 4 Strides",note:"4×20sec strides."},fri:{type:"strength",label:"Strength A · 2 sets",routine:"A",note:"2 sets only before peak weekend."},sat:{type:"long",label:"20mi Long"},sun:{type:"easy",label:"8mi Easy Recovery",note:"Biggest back-to-back of the plan."}},
+  {week:14,startDate:"Sep 7",phase:"Peak",totalMiles:42,longRun:13,bronx10:true,speedSession:false,strengthSets:"2 sets",tueMini:true,longRunNote:"BRONX 10 MILER (Sat Sep 13). Controlled effort — 10:45–11:00/mi, cap HR 164. Dress rehearsal.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"5mi Easy + 4 Strides + Mini",note:"4 strides + mini session. Last mini of the plan."},wed:{type:"pace",label:"5mi Marathon Pace",note:"Shortened pace run — big race weekend ahead."},thu:{type:"easy",label:"3mi Easy",note:"Very easy shakeout before race weekend."},fri:{type:"rest",label:"Rest + Race Prep"},sat:{type:"race",label:"🏁 Bronx 10 Miler",note:"Start at 10:45–11:00/mi. Cap HR at 164. Walk water stops."},sun:{type:"easy",label:"3mi Easy Recovery",note:"Very easy post-race recovery. Walk if needed."}},
+  {week:15,startDate:"Sep 14",phase:"Taper",totalMiles:30,longRun:10,speedSession:true,strengthSets:"2 sets",tueMini:false,longRunNote:"First taper week. Legs may feel oddly flat — normal. Trust the process.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"4mi Easy + 4 Strides",note:"4×20sec strides. No mini session from here."},wed:{type:"speed",label:"5mi w/ 3×1mi",note:"1mi WU + 3×1mi @ 9:30–9:45/mi + 1mi CD. Last speed session."},thu:{type:"easy",label:"3mi Very Easy",note:"Shakeout only. HR under 145."},fri:{type:"strength",label:"Strength A · 2 sets",routine:"A",note:"Core 4 only. 2 sets."},sat:{type:"long",label:"10mi Long"},sun:{type:"easy",label:"4mi Easy Recovery",note:"Back-to-back. Easy and controlled."}},
+  {week:16,startDate:"Sep 21",phase:"Taper",totalMiles:20,longRun:0,speedSession:false,strengthSets:"none",tueMini:false,longRunNote:"Race week. Everything easy. Trust every mile since June 8.",mon:{type:"rest",label:"Rest"},tue:{type:"easy",label:"3mi Easy + 4 Strides",note:"Last strides. Light and breezy."},wed:{type:"pace",label:"2mi + 4 Race Strides",note:"2mi easy then 4×20sec at goal pace. Stay calm."},thu:{type:"easy",label:"2mi Very Easy",note:"Shakeout only. Legs, not lungs."},fri:{type:"rest",label:"Rest + Packet Pickup"},sat:{type:"rest",label:"Rest. Carb load. Sleep early."},sun:{type:"race",label:"🏁 RACE DAY",note:"Hamptons Marathon — Sep 26. Start 10:45/mi. Cap HR 158 on hills. Miles 1–8 disciplined. Trust the training."}},
+];
+
+const PHASE_COLOR = {Base:"#2563eb",Build:"#059669",Peak:"#ea580c",Taper:"#7c3aed"};
+const TYPE_COLOR  = {rest:"#94a3b8",easy:"#2563eb",pace:"#d97706",speed:"#dc2626",long:"#7c3aed",strength:"#059669",cross:"#64748b",race:"#dc2626"};
+const TYPE_BG     = {rest:"#f1f5f9",easy:"#eff6ff",pace:"#fffbeb",speed:"#fef2f2",long:"#f5f3ff",strength:"#ecfdf5",cross:"#f8fafc",race:"#fef2f2"};
+const DAYS = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
+const DAY_KEYS = ["mon","tue","wed","thu","fri","sat","sun"];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  view: "plan",
+  selectedWeek: 0,
+  modal: null,       // null | "strength" | "mini" | "log"
+  strengthRoutine: null,
+  strengthTab: "core",
+  logTarget: null,   // {weekIdx, dayKey}
+  logText: "",
+  completed: {},     // key: "w0-mon" -> {done:true, note:"..."}
+};
+
+// Load persisted data
+try {
+  const saved = localStorage.getItem("hamptons_log");
+  if (saved) state.completed = JSON.parse(saved);
+} catch(e){}
+
+function saveLog() {
+  try { localStorage.setItem("hamptons_log", JSON.stringify(state.completed)); } catch(e){}
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById("app").innerHTML = buildApp();
+  attachEvents();
+}
+
+function completedKey(wIdx, dayKey) { return `w${wIdx}-${dayKey}`; }
+function isDone(wIdx, dayKey) { return !!(state.completed[completedKey(wIdx,dayKey)]||{}).done; }
+function getNote(wIdx, dayKey) { return (state.completed[completedKey(wIdx,dayKey)]||{}).note||""; }
+
+function countDone() {
+  return Object.values(state.completed).filter(v=>v.done).length;
+}
+function totalWorkouts() {
+  let t=0;
+  weeks.forEach(w=>{
+    DAY_KEYS.forEach(k=>{ if(w[k] && w[k].type!=="rest") t++; });
+  });
+  return t;
+}
+
+function buildApp() {
+  const w = weeks[state.selectedWeek];
+  const done = countDone(), total = totalWorkouts();
+  const pct = Math.round(done/total*100);
+
+  return `
+  <div class="header">
+    <div class="header-sub">Higdon N2 Hybrid · LT 177 · Max HR 202</div>
+    <h1>Hamptons Marathon</h1>
+    <div class="header-dates mono">JUN 8 → SEP 26, 2026 · 16 WEEKS</div>
+    <div class="stat-grid">
+      ${[["16 Wks","Plan","#3b82f6"],["20 Mi","Peak Long","#8b5cf6"],["Sep 26","Race Day","#ef4444"],["177","LT HR","#dc2626"],["202","Max HR","#dc2626"]].map(([v,l,c])=>`
+        <div class="stat-card"><div class="stat-val mono" style="color:${c}">${v}</div><div class="stat-label">${l}</div></div>
+      `).join("")}
+    </div>
+    <div style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <span class="mono" style="font-size:10px;color:#64748b;letter-spacing:2px">TRAINING LOG</span>
+        <span class="mono" style="font-size:11px;color:#4ade80;font-weight:700">${done}/${total} workouts · ${pct}%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="info-box info-green" style="margin-top:10px">
+      <strong>HR Zones:</strong> Easy 140–162 · MP 155–165 · Speed up to 177
+    </div>
+    <div class="info-box info-red" style="margin-top:8px">
+      <strong>⚡ Tendon:</strong> Eccentric Tibialis Raises every session. Non-negotiable.
+    </div>
+  </div>
+
+  <div class="tabs">
+    ${[["plan","Plan"],["mini","Mini"],["strength","Strength"],["notes","Notes"]].map(([id,label])=>`
+      <button class="tab-btn ${state.view===id?"active":""}" data-tab="${id}">${label}</button>
+    `).join("")}
+  </div>
+
+  <div class="content">
+    ${state.view==="plan" ? buildPlanView(w) : ""}
+    ${state.view==="mini" ? buildMiniView() : ""}
+    ${state.view==="strength" ? buildStrengthView() : ""}
+    ${state.view==="notes" ? buildNotesView() : ""}
+  </div>
+
+  ${state.modal==="strength" ? buildStrengthModal() : ""}
+  ${state.modal==="mini" ? buildMiniModal() : ""}
+  ${state.modal==="log" ? buildLogModal() : ""}
+  `;
+}
+
+function buildPlanView(w) {
+  const weekBtns = weeks.map((wk,i)=>{
+    const active = state.selectedWeek===i;
+    const pc = PHASE_COLOR[wk.phase];
+    const doneCount = DAY_KEYS.filter(k=>isDone(i,k)).length;
+    const totalDays = DAY_KEYS.filter(k=>wk[k]&&wk[k].type!=="rest").length;
+    const allDone = doneCount===totalDays && totalDays>0;
+    return `<div style="position:relative">
+      <button class="week-btn" data-week="${i}"
+        style="background:${active?pc:(allDone?"#ecfdf5":"#fff")};color:${active?"#fff":(allDone?"#059669":wk.bronx10?"#dc2626":pc)};border-color:${active?pc:(allDone?"#059669":wk.bronx10?"#dc2626":wk.speedSession?pc:"#e2e8f0")};${active?`box-shadow:0 2px 8px ${pc}40`:""}"
+      >${i+1}${allDone?"✓":""}</button>
+      ${wk.speedSession&&!active&&!wk.bronx10?`<div class="week-dot" style="top:2px;right:2px;background:#dc2626"></div>`:""}
+      ${wk.tueMini&&!active?`<div class="week-dot" style="bottom:2px;left:2px;background:#059669"></div>`:""}
+    </div>`;
+  }).join("");
+
+  const pc = w.bronx10?"#dc2626":PHASE_COLOR[w.phase];
+
+  const daycards = DAY_KEYS.map((key,i)=>{
+    const day = w[key];
+    if(!day) return "";
+    const hasMini = key==="tue" && w.tueMini;
+    const isRest = day.type==="rest";
+    const done = isDone(state.selectedWeek, key);
+    const note = getNote(state.selectedWeek, key);
+    const tc = TYPE_COLOR[day.type];
+    const tbg = TYPE_BG[day.type];
+    return `<div class="day-card ${done&&!isRest?"day-done":""}" style="background:${isRest?"#f8fafc":tbg};border-color:${isRest?"#e2e8f0":(tc+"40")};border-left-color:${hasMini?"#d97706":(isRest?"#e2e8f0":tc)};opacity:${isRest?0.55:1}">
+      <div class="day-label">${DAYS[i]}</div>
+      <div style="flex:1">
+        <div class="day-title" style="color:${isRest?"#94a3b8":"#0f172a"}">${day.label}</div>
+        <div class="day-tags">
+          <span class="day-tag" style="color:${tc};background:${tc}18">${day.type}</span>
+          ${hasMini?`<span class="day-tag" style="color:#92400e;background:#fef3c7">+MINI</span>`:""}
+          ${key==="sun"&&day.type==="easy"?`<span class="day-tag" style="color:#1e40af;background:#dbeafe">RECOVERY</span>`:""}
+          ${done&&!isRest?`<span class="day-tag" style="color:#065f46;background:#d1fae5">✓ DONE</span>`:""}
+        </div>
+        ${day.note?`<div class="day-note">${day.note}</div>`:""}
+        ${day.type==="long"?`<div class="day-long-note" style="color:${w.bronx10?"#991b1b":"#5b21b6"}">${w.longRunNote}</div>`:""}
+        ${note?`<div class="day-note" style="color:#059669;margin-top:4px;font-style:italic">📝 ${note}</div>`:""}
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+          ${!isRest?`<button class="action-btn" data-log="${key}" style="color:${done?"#991b1b":"#065f46"};background:${done?"#fef2f2":"#ecfdf5"};border-color:${done?"#dc2626":"#059669"}">${done?"Unmark":"Log Run"}</button>`:""}
+          ${day.type==="strength"&&day.routine?`<button class="action-btn" data-strength="${day.routine}" style="color:#065f46;background:#ecfdf5;border-color:#059669">Routine ${day.routine} →</button>`:""}
+          ${hasMini?`<button class="action-btn" data-mini="1" style="color:#92400e;background:#fffbeb;border-color:#d97706">Mini Session →</button>`:""}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  return `
+    <div class="section-label">SELECT WEEK</div>
+    <div class="week-grid">${weekBtns}</div>
+    <div class="week-legend">Red dot = speed · Red border = Bronx · Green dot = Tue mini · ✓ = week complete</div>
+
+    <div class="week-header" style="border-top-color:${pc}">
+      <div>
+        <div class="week-phase" style="color:${pc}">Week ${w.week} · ${w.phase}${w.cutback?" · CUTBACK":""}${w.speedSession&&!w.bronx10?" · SPEED":""}${w.bronx10?" · BRONX 10":""}${w.tueMini?" · TUE MINI":""}</div>
+        <div class="week-date">${w.startDate}</div>
+      </div>
+      <div class="week-stats">
+        <div class="week-stat"><div class="week-stat-val" style="color:${PHASE_COLOR[w.phase]}">${w.totalMiles}</div><div class="week-stat-label">Miles</div></div>
+        <div class="week-stat"><div class="week-stat-val" style="color:${w.bronx10?"#dc2626":"#7c3aed"}">${w.longRun||"🏁"}</div><div class="week-stat-label">Long</div></div>
+        <div class="week-stat"><div class="week-stat-val mono" style="font-size:11px;color:#059669">${w.strengthSets}</div><div class="week-stat-label">Strength</div></div>
+      </div>
+    </div>
+
+    <div class="day-list">${daycards}</div>
+
+    <div class="week-nav">
+      <button class="nav-btn" id="prevBtn" ${state.selectedWeek===0?"disabled":""}>← Prev</button>
+      <span class="nav-center">Week ${state.selectedWeek+1} of ${weeks.length}</span>
+      <button class="nav-btn" id="nextBtn" ${state.selectedWeek===weeks.length-1?"disabled":""}>Next →</button>
+    </div>
+  `;
+}
+
+function buildMiniView() {
+  return `
+    <div class="section-label">TUESDAY MINI SESSION</div>
+    <div class="alert" style="background:#fffbeb;border-color:#d97706;border:1px solid #d97706;border-left-width:4px">
+      <div class="alert-title" style="color:#92400e">Why It Exists</div>
+      <div class="alert-body" style="color:#78350f">Tuesday mini builds muscular endurance in glutes and calves. Sunday recovery runs add back-to-back stimulus. Together they stop form degrading after mile 12.</div>
+    </div>
+    <div class="section-card" style="border-top:4px solid #d97706">
+      <div class="section-card-header" style="background:#fffbeb">
+        <div class="section-card-title" style="color:#92400e">3 Exercises · Always In This Order</div>
+        <div class="section-card-sub" style="color:#78350f">After easy run + strides · ~10 min</div>
+      </div>
+      ${tuesdayMini.map((ex,i)=>`
+        <div class="section-item">
+          <div class="item-num">${i+1}.</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+              <span class="item-name" style="color:${ex.name.includes("Tibialis")?"#dc2626":"#0f172a"}">${ex.name}</span>
+              <span class="item-sets" style="color:#92400e;background:#fef3c7">${ex.sets}</span>
+            </div>
+            <div class="item-cue">${ex.cue}</div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+    <div class="section-card">
+      <div class="section-card-header" style="background:#f8fafc">
+        <div class="section-card-title" style="color:#64748b">Schedule</div>
+      </div>
+      ${[["W1–W4","Base","Not active","—","Friday only","#2563eb"],["W5–W9","Build","Active","2×20 each","Full reps","#059669"],["W10–W14","Peak","Active","2×15 each","Protect freshness","#ea580c"],["W15+","Taper","Drop","—","Protect race legs","#7c3aed"]].map(([wks,ph,st,reps,note,c])=>`
+        <div class="section-item" style="flex-wrap:wrap;gap:6px">
+          <span style="color:${c};font-weight:700;font-size:12px;font-family:monospace;min-width:50px">${wks}</span>
+          <span style="color:${st==="Active"?"#059669":"#94a3b8"};font-size:12px;font-weight:700;font-family:monospace">${st}</span>
+          <span style="color:#dc2626;font-size:12px;font-weight:700;font-family:monospace">${reps}</span>
+          <span style="color:#64748b;font-size:12px">${note}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function buildStrengthView() {
+  return `
+    <div class="section-label">STRENGTH ROUTINES A · B · C</div>
+    <div class="alert" style="background:#fef2f2;border-color:#dc2626;border:1px solid #dc2626;border-left-width:4px">
+      <div class="alert-title" style="color:#991b1b">⚡ Non-Negotiable</div>
+      <div class="alert-body" style="color:#7f1d1d">Even if you skip everything else — always do the <strong>Eccentric Tibialis Raise</strong>. Structural protection given your tendonitis history.</div>
+    </div>
+    ${Object.entries(strengthExercises).map(([key,r])=>`
+      <div class="section-card" style="border-top:4px solid #059669;margin-bottom:14px">
+        <div class="section-card-header" style="background:#f0fdf4">
+          <div class="section-card-title" style="color:#065f46">Routine ${key} — ${r.label}</div>
+          <div class="section-card-sub" style="color:#064e3b">${r.focus}</div>
+        </div>
+        <div style="padding:8px 16px 4px;font-size:9px;color:#059669;text-transform:uppercase;letter-spacing:2px;font-family:monospace;font-weight:700">Core 4 — Always</div>
+        ${r.core.map((ex,i)=>`
+          <div class="section-item">
+            <div class="item-num">${i+1}.</div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <span class="item-name" style="color:${ex.name.includes("Tibialis")?"#dc2626":"#0f172a"}">${ex.name}</span>
+                <span class="item-sets" style="color:#065f46;background:#d1fae5">${ex.sets}</span>
+                ${ex.name.includes("Tibialis")?`<span class="item-sets" style="color:#991b1b;background:#fee2e2">⚡ KEY</span>`:""}
+              </div>
+              <div class="item-cue">${ex.cue}</div>
+            </div>
+          </div>
+        `).join("")}
+        <div style="padding:8px 16px 4px;font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:2px;font-family:monospace;font-weight:700">Optional — If Time</div>
+        ${r.optional.map((ex,i)=>`
+          <div class="section-item" style="background:#fafafa">
+            <div class="item-num" style="color:#e2e8f0">${i+1}.</div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+                <span class="item-name" style="color:#64748b">${ex.name}</span>
+                <span class="item-sets" style="color:#64748b;background:#f1f5f9">${ex.sets}</span>
+              </div>
+              <div class="item-cue" style="color:#94a3b8">${ex.cue}</div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `).join("")}
+  `;
+}
+
+function buildNotesView() {
+  const notes = [
+    {c:"#2563eb",bg:"#eff6ff",tc:"#1e40af",bc:"#1e3a8a",t:"Sunday Recovery Runs",b:"Sunday is an easy recovery run every week — not cross/rest. Running on tired post-long-run legs = back-to-back stimulus. If tendon is tender → walk or full rest."},
+    {c:"#dc2626",bg:"#fef2f2",tc:"#991b1b",bc:"#7f1d1d",t:"Tuesday Mini — The Mile 12 Fix",b:"10 minutes after Tuesday's easy run. Glute Bridge + Calf Raise + Tibialis Raise. Higher reps than Friday. Stops form degrading after mile 12."},
+    {c:"#2563eb",bg:"#eff6ff",tc:"#1e40af",bc:"#1e3a8a",t:"Easy Run Pace (Your Zones)",b:"HR 140–162 on all easy runs. Strides are the only fast running. Don't let GPS pace pressure you — go by feel and HR."},
+    {c:"#dc2626",bg:"#fef2f2",tc:"#991b1b",bc:"#7f1d1d",t:"Speed Sessions",b:"400m → 800m → 1mi progression. Always 1mi warmup and cooldown. HR up to ~170 on reps. 5 sessions total."},
+    {c:"#d97706",bg:"#fffbeb",tc:"#92400e",bc:"#78350f",t:"Pace Runs",b:"Goal pace 10:45–11:00/mi = HR ~155–165. Wednesday slot. These train your body to hold race pace when tired. Never skip."},
+    {c:"#7c3aed",bg:"#f5f3ff",tc:"#5b21b6",bc:"#4c1d95",t:"Long Run Rules",b:"Run 60–90 sec/mile slower than MP. Fuel from mile 12, every 40min. Walk water stops from W7. The April 16mi walk-run doesn't count — your real ceiling is higher."},
+    {c:"#dc2626",bg:"#fef2f2",tc:"#991b1b",bc:"#7f1d1d",t:"Bronx 10 Miler — W14 Sep 13",b:"Run at 10:45–11:00/mi. Cap HR 164. Not a PR attempt — dress rehearsal for race day logistics and nutrition."},
+    {c:"#059669",bg:"#ecfdf5",tc:"#065f46",bc:"#064e3b",t:"Pace Review at W8",b:"By W8 Runalyze will recalibrate from Brooklyn Half data. Brooklyn effort (HR 168 = ~83% max) confirms 10:45–11:00/mi target is well-calibrated."},
+    {c:"#dc2626",bg:"#fef2f2",tc:"#991b1b",bc:"#7f1d1d",t:"⚡ Tendon Protocol",b:"Get physio sign-off before starting. Tightness across top of foot: skip run, mobility only, ice 15min. Tibialis raises every session — especially during peak weeks."},
+    {c:"#0f172a",bg:"#f8fafc",tc:"#0f172a",bc:"#334155",t:"Race Day — Sep 26",b:"Start 10:45/mi. Cap HR 158 on hills. Miles 1–8 disciplined. 9–18 hold form. 19–26.2 race. Don't go out with the crowd. Trust the 16 weeks."},
+  ];
+  return `
+    <div class="section-label">RACE NOTES & STRATEGY</div>
+    ${notes.map(n=>`
+      <div class="note-card" style="background:${n.bg};border-color:${n.c};border-left-color:${n.c}">
+        <div class="note-title" style="color:${n.tc}">${n.t}</div>
+        <div class="note-body" style="color:${n.bc}">${n.b}</div>
+      </div>
+    `).join("")}
+  `;
+}
+
+function buildStrengthModal() {
+  const r = strengthExercises[state.strengthRoutine];
+  if (!r) return "";
+  return `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div>
+            <div style="font-size:9px;color:#059669;text-transform:uppercase;letter-spacing:3px;font-family:monospace;font-weight:700">Strength Routine</div>
+            <div style="font-size:18px;font-weight:700;color:#0f172a;margin-top:3px">${r.label}</div>
+          </div>
+          <button class="modal-close" id="closeModal">✕ CLOSE</button>
+        </div>
+        <div class="tab-pills">
+          <button class="tab-pill" data-stab="core" style="background:${state.strengthTab==="core"?"#ecfdf5":"#f8fafc"};border-color:${state.strengthTab==="core"?"#059669":"#e2e8f0"};color:${state.strengthTab==="core"?"#065f46":"#64748b"}">Core 4 · Always</button>
+          <button class="tab-pill" data-stab="optional" style="background:${state.strengthTab==="optional"?"#ecfdf5":"#f8fafc"};border-color:${state.strengthTab==="optional"?"#059669":"#e2e8f0"};color:${state.strengthTab==="optional"?"#065f46":"#64748b"}">Optional · If Time</button>
+        </div>
+        ${state.strengthTab==="core" ? r.core.map((ex,i)=>`
+          <div style="border-bottom:1px solid #f1f5f9;padding-bottom:13px;margin-bottom:13px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span style="font-size:14px;font-weight:700;color:${ex.name.includes("Tibialis")?"#dc2626":"#0f172a"}">${i+1}. ${ex.name}</span>
+              <span style="font-size:10px;color:#065f46;background:#d1fae5;padding:3px 9px;border-radius:4px;white-space:nowrap;font-family:monospace;font-weight:700">${ex.sets}</span>
+            </div>
+            <div style="font-size:12px;color:#64748b;line-height:1.6">${ex.cue}</div>
+          </div>
+        `).join("") : `
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:12px;font-style:italic">Do these if you have an extra 10–15 minutes. Skip during peak weeks if fatigued.</div>
+          ${r.optional.map((ex,i)=>`
+            <div style="border-bottom:${i<r.optional.length-1?"1px solid #f1f5f9":"none"};padding-bottom:13px;margin-bottom:13px">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
+                <span style="font-size:14px;font-weight:700;color:#64748b">${i+1}. ${ex.name}</span>
+                <span style="font-size:10px;color:#64748b;background:#f1f5f9;padding:3px 9px;border-radius:4px;white-space:nowrap;font-family:monospace">${ex.sets}</span>
+              </div>
+              <div style="font-size:12px;color:#94a3b8;line-height:1.6">${ex.cue}</div>
+            </div>
+          `).join("")}
+        `}
+      </div>
+    </div>
+  `;
+}
+
+function buildMiniModal() {
+  return `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div>
+            <div style="font-size:9px;color:#d97706;text-transform:uppercase;letter-spacing:3px;font-family:monospace;font-weight:700">Tuesday Mini</div>
+            <div style="font-size:18px;font-weight:700;color:#0f172a;margin-top:3px">Muscular Endurance</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">After easy run + strides · ~10 min</div>
+          </div>
+          <button class="modal-close" id="closeModal">✕ CLOSE</button>
+        </div>
+        ${tuesdayMini.map((ex,i)=>`
+          <div style="border-bottom:${i<tuesdayMini.length-1?"1px solid #f1f5f9":"none"};padding-bottom:13px;margin-bottom:13px">
+            <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px">
+              <span style="font-size:14px;font-weight:700;color:${ex.name.includes("Tibialis")?"#dc2626":"#0f172a"}">${i+1}. ${ex.name}</span>
+              <span style="font-size:10px;color:#92400e;background:#fef3c7;padding:3px 9px;border-radius:4px;white-space:nowrap;font-family:monospace;font-weight:700">${ex.sets}</span>
+            </div>
+            <div style="font-size:12px;color:#64748b;line-height:1.6">${ex.cue}</div>
+          </div>
+        `).join("")}
+        <div style="background:#fffbeb;border:1px solid #d97706;border-radius:8px;padding:12px 14px">
+          <div style="font-size:12px;color:#78350f;line-height:1.65">
+            W5–W9: <strong>2×20 each</strong> · W10–W14: <strong>2×15 each</strong> · W15+: <strong>Drop — protect race legs</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildLogModal() {
+  const {weekIdx, dayKey} = state.logTarget;
+  const w = weeks[weekIdx];
+  const day = w[DAY_KEYS.find(k=>k===dayKey)];
+  const done = isDone(weekIdx, dayKey);
+  const existingNote = getNote(weekIdx, dayKey);
+  return `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div>
+            <div style="font-size:9px;color:#2563eb;text-transform:uppercase;letter-spacing:3px;font-family:monospace;font-weight:700">Log Workout</div>
+            <div style="font-size:18px;font-weight:700;color:#0f172a;margin-top:3px">${day?day.label:""}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">W${weekIdx+1} · ${w.startDate} · ${dayKey.toUpperCase()}</div>
+          </div>
+          <button class="modal-close" id="closeModal">✕ CLOSE</button>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:#64748b;margin-bottom:6px;font-family:monospace">STATUS</div>
+          <div style="display:flex;gap:8px">
+            <button id="markDone" style="flex:1;padding:10px;border-radius:8px;font-size:12px;font-family:monospace;font-weight:700;border:1.5px solid ${!done?"#059669":"#e2e8f0"};background:${!done?"#ecfdf5":"#f8fafc"};color:${!done?"#065f46":"#94a3b8"}">✓ Completed</button>
+            <button id="markSkip" style="flex:1;padding:10px;border-radius:8px;font-size:12px;font-family:monospace;font-weight:700;border:1.5px solid ${done?"#e2e8f0":"#dc2626"};background:${done?"#f8fafc":"#fef2f2"};color:${done?"#94a3b8":"#991b1b"}">✗ Skipped/Undo</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#64748b;margin-bottom:4px;font-family:monospace">NOTES (optional)</div>
+          <textarea class="log-textarea" id="logNoteInput" placeholder="How did it feel? HR, pace, conditions...">${existingNote}</textarea>
+        </div>
+        <button class="log-save-btn" id="saveLogBtn">Save →</button>
+      </div>
+    </div>
+  `;
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────────────────────
+function attachEvents() {
+  // Tabs
+  document.querySelectorAll("[data-tab]").forEach(btn=>{
+    btn.addEventListener("click",()=>{ state.view=btn.dataset.tab; render(); });
+  });
+  // Week buttons
+  document.querySelectorAll("[data-week]").forEach(btn=>{
+    btn.addEventListener("click",()=>{ state.selectedWeek=parseInt(btn.dataset.week); render(); });
+  });
+  // Prev/next
+  const prev=document.getElementById("prevBtn");
+  const next=document.getElementById("nextBtn");
+  if(prev) prev.addEventListener("click",()=>{ if(state.selectedWeek>0){state.selectedWeek--;render();} });
+  if(next) next.addEventListener("click",()=>{ if(state.selectedWeek<weeks.length-1){state.selectedWeek++;render();} });
+  // Strength buttons
+  document.querySelectorAll("[data-strength]").forEach(btn=>{
+    btn.addEventListener("click",()=>{ state.modal="strength"; state.strengthRoutine=btn.dataset.strength; state.strengthTab="core"; render(); });
+  });
+  // Mini buttons
+  document.querySelectorAll("[data-mini]").forEach(btn=>{
+    btn.addEventListener("click",()=>{ state.modal="mini"; render(); });
+  });
+  // Log buttons
+  document.querySelectorAll("[data-log]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const key = btn.dataset.log;
+      const wIdx = state.selectedWeek;
+      // Quick toggle if no note exists
+      const ck = completedKey(wIdx, key);
+      if(isDone(wIdx,key) && !getNote(wIdx,key)){
+        state.completed[ck] = {done:false, note:""};
+        saveLog(); render(); return;
+      }
+      state.modal="log";
+      state.logTarget={weekIdx:wIdx, dayKey:key};
+      render();
+    });
+  });
+  // Modal close
+  const closeBtn=document.getElementById("closeModal");
+  if(closeBtn) closeBtn.addEventListener("click",()=>{ state.modal=null; render(); });
+  const overlay=document.getElementById("modalOverlay");
+  if(overlay) overlay.addEventListener("click",(e)=>{ if(e.target===overlay){state.modal=null;render();} });
+  // Strength tabs in modal
+  document.querySelectorAll("[data-stab]").forEach(btn=>{
+    btn.addEventListener("click",()=>{ state.strengthTab=btn.dataset.stab; render(); });
+  });
+  // Log modal buttons
+  const markDone=document.getElementById("markDone");
+  const markSkip=document.getElementById("markSkip");
+  const saveBtn=document.getElementById("saveLogBtn");
+  if(markDone) markDone.addEventListener("click",()=>{
+    const {weekIdx,dayKey}=state.logTarget;
+    const ck=completedKey(weekIdx,dayKey);
+    state.completed[ck]={...(state.completed[ck]||{}),done:true};
+    render();
+  });
+  if(markSkip) markSkip.addEventListener("click",()=>{
+    const {weekIdx,dayKey}=state.logTarget;
+    const ck=completedKey(weekIdx,dayKey);
+    state.completed[ck]={...(state.completed[ck]||{}),done:false};
+    render();
+  });
+  if(saveBtn) saveBtn.addEventListener("click",()=>{
+    const {weekIdx,dayKey}=state.logTarget;
+    const ck=completedKey(weekIdx,dayKey);
+    const noteEl=document.getElementById("logNoteInput");
+    const note=noteEl?noteEl.value:"";
+    state.completed[ck]={...(state.completed[ck]||{}),note};
+    saveLog();
+    state.modal=null;
+    render();
+  });
+}
+
+// ─── PWA ─────────────────────────────────────────────────────────────────────
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt",(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  document.getElementById("installBanner").classList.remove("hidden");
+});
+
+window.installPWA = function() {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; document.getElementById("installBanner").classList.add("hidden"); });
+};
+
+// Service Worker
+if("serviceWorker" in navigator){
+  const swCode = `
+const CACHE="hamptons-v1";
+const ASSETS=[location.href];
+self.addEventListener("install",e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
+  self.skipWaiting();
+});
+self.addEventListener("activate",e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener("fetch",e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    if(res.ok){const c=res.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}
+    return res;
+  }).catch(()=>caches.match(e.request))));
+});
+  `;
+  const blob = new Blob([swCode],{type:"application/javascript"});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+
+// Inline manifest
+const manifest = {
+  name:"Hamptons Marathon Plan",
+  short_name:"Hamptons 26.2",
+  description:"16-week marathon training plan · Sep 26 2026",
+  start_url:location.href,
+  display:"standalone",
+  orientation:"portrait",
+  background_color:"#f8fafc",
+  theme_color:"#0f172a",
+  icons:[
+    {src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><text y='68' x='50' text-anchor='middle' font-size='56' font-family='Georgia'>🏃</text></svg>",sizes:"192x192",type:"image/svg+xml"},
+    {src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><text y='68' x='50' text-anchor='middle' font-size='56' font-family='Georgia'>🏃</text></svg>",sizes:"512x512",type:"image/svg+xml"}
+  ]
+};
+const manifestBlob = new Blob([JSON.stringify(manifest)],{type:"application/json"});
+const manifestUrl = URL.createObjectURL(manifestBlob);
+document.getElementById("manifestLink").href = manifestUrl;
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
